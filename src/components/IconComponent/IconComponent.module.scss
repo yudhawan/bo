@@ -1,0 +1,19 @@
+.primary{
+    path{
+        stroke: #176cf7;
+        // fill: #176cf7;
+    }
+}
+.secondary{
+    path{
+        stroke: #ffc117;
+        // fill: #ffc117;
+    }
+}
+
+.white{
+    path{
+        stroke: var(--neutral-50);
+        // fill: #ffc117;
+    }
+}

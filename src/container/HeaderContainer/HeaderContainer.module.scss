@@ -1,0 +1,31 @@
+.main{
+    position: fixed;
+    width: calc(100% - 280px);
+    height: 63px;
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    top: 0;
+    left: 280px;
+    background-color: var(--primary-700);
+    gap: 14px;
+    text-transform: capitalize;
+    z-index: 50;
+}
+
+.close{
+    position: fixed;
+    width: 100%;
+    height: 63px;
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    top: 0;
+    left: 0;
+    background-color: var(--primary-700);
+    gap: 14px;
+    text-transform: capitalize;
+    z-index: 50;
+}

@@ -1,0 +1,380 @@
+'use client'
+import { useContext,useMemo,useState,useEffect,useTransition } from 'react'
+import TitleContainer from '../TitleContainer/TitleContainer'
+import { ModalContext } from '@/constant/ModalContext'
+import Input from '@/components/Input/Input'
+import Button from '@/components/Button/Button'
+import useSWR,{mutate} from 'swr'
+import { useToken } from '@/store/zustand/token'
+import { checkStatusLanguage, getDataTableSettingBahasa,saveChangedData } from '@/libs/masterBahasa.service'
+import ToogleButton from '@/components/ToogleButton/ToogleButton'
+import RadioButton from '@/components/Radio/RadioButton'
+import Checkbox from '@/components/Checkbox/Checkbox'
+import Bubble from '@/components/Bubble/Bubble'
+import style from './BrandContainer.module.scss'
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
+import ModalProvider from '@/constant/ModalProvider'
+import PemberitahuanPerubahan from '@/ModalComponents/PemberitahuanPerubahan/PemberitahuanPerubahan'
+import settingBahasaStore from '@/store/zustand/settingBahasa'
+import { useRouter} from 'next/navigation'
+import PaginationContainer from '../../components/PaginationContainer/PaginationContainer'
+import localPaginationStore from '@/store/zustand/pagination'
+import Swal from 'sweetalert2'
+
+const tableHeader=['action','status','icon','ID','language name','default penjual','penjual','default pembeli','pembeli']
+const BrandContainer = ()=>{ 
+    const router = useRouter()
+    const {data:dataPage,dataPagination,setData,currentPage,totalPages,setTotalPages,offset,setPage} = localPaginationStore()
+    const {accessToken,clearToken} = useToken()
+    const url = `${process.env.NEXT_PUBLIC_GLOBAL_API}/setting_bahasa?type=muatparts`
+    const {data,isLoading,error}=useSWR([url,accessToken],([url,accessToken])=>getDataTableSettingBahasa(url,accessToken))
+    const [rows,setRows] = useState(data?.Data)
+    const [getSearch,setSearch] = useState('')
+    const [getTmp,setTmp]=useState([])
+    const [edit,setEdit]=useState(false)
+    const [isPending,startTransition] = useTransition()
+    const [validation,setValidation]=useState([])
+    const {sidebarTerr,handleModalActive,handleModalId,setProps,handleModalWithHeader,handleModalLoading} = useContext(ModalContext)
+    const {setCancelChange,setSubmitChange,cancelChange,submitChange} = settingBahasaStore()
+
+    const defaultHeaders = ['actions','status','image']
+    const [tableHeader, setTableHeader] = useState(defaultHeaders)
+    const {dataCol,isLoadingCol,errorCol}=useSWR([url,accessToken],([url,accessToken])=>getColumnBahasa(url,accessToken))
+    useEffect(() => {
+        if(dataCol && Array.isArray(data)){
+            const apiHeaders = data.map((item) => `Name Brand ()`)
+        }
+    })
+    const sensors = useSensors(
+        useSensor(PointerSensor,{
+            activationConstraint:{
+                delay:200,
+                tolerance:3
+            }
+        }),
+        useSensor(KeyboardSensor, {
+        coordinateGetter: sortableKeyboardCoordinates,
+        })
+    )
+
+
+    // Handle drag end and reorder the rows
+    const handleDragEnd = (event) => {
+        const { active, over } = event
+        if(!active || !over || active.id===over.id) return;
+      
+        setTmp((items) => {
+            const oldIndex = items.findIndex((item) => item.id === active.id)
+            const newIndex = items.findIndex((item) => item.id === over.id)
+            return arrayMove(items, oldIndex, newIndex)
+        })
+    }
+    const handleChangeStatusTerrr=(id,name,isSingular)=>{
+        startTransition(()=>{
+            const getStat = getTmp.find(a=>a.LanguageID===id)
+          
+            let newState = []
+            if(name==='Status' & !getStat[name]){
+                checkStatusLanguage(`${process.env.NEXT_PUBLIC_GLOBAL_API}/status_bahasa?id=${id}`).then(data=> {
+                    console.log('response',data?.Data?.isActive)
+                    newState=getTmp.map(val=>{
+                        if(val.LanguageID===id) val[name]=data?.Data?.isActive
+                        if(!data?.Data?.isActive) val.disabled=false
+                        return val
+                    })
+                    setValidation(prev=>([...prev,id]))
+                    setTmp(newState)
+                })
+                return;
+            }
+
+            if(isSingular){
+                let singular = getTmp.map(val=>{
+                    if(val.LanguageID===id) val[name]=isSingular
+                    else val[name]=false
+                    return val
+                })
+                newState=singular
+            }else{
+                newState=getTmp.map(val=>{
+                    if(val.LanguageID===id && name==='Status' && typeof statDisable==='boolean') {
+                        val[name]=statDisable
+                    }
+                    if(val.LanguageID===id) val[name]=!getStat[name]
+                    return val
+                })
+            }
+            setTmp(newState)
+
+        })
+    }
+    
+    const handleCancel = ()=>{
+        const validationMove= rows.map((val,i)=>{
+            if(rows[i]['LanguageID']!==getTmp[i]['LanguageID']) return val
+        })
+        const validationStatus= rows.map((val,i)=>{
+            if(rows[i]['Status']!==getTmp[i]['Status']) return val
+        })
+        const validationDefaultBuyer= rows.map((val,i)=>{
+            if(rows[i]['DefaultBuyer']!==getTmp[i]['DefaultBuyer']) return val
+        })
+        const validationDefaultSeller= rows.map((val,i)=>{
+            if(rows[i]['DefaultSeller']!==getTmp[i]['DefaultSeller']) return val
+        })
+        const validationSeller= rows.map((val,i)=>{
+            if(rows[i]['Seller']!==getTmp[i]['Seller']) return val
+        })
+        const validationBuyer= rows.map((val,i)=>{
+            if(rows[i]['Buyer']!==getTmp[i]['Buyer']) return val
+        })
+
+        // validationMove.filter(a=> typeof a!=='undefined').length
+        if(
+            validationMove.filter(a=> typeof a!=='undefined').length 
+            // validationStatus.filter(a=> typeof a!=='undefined').length 
+            // validationDefaultBuyer.filter(a=> typeof a!=='undefined').length ||
+            // validationDefaultSeller.filter(a=> typeof a!=='undefined').length ||
+            // validationSeller.filter(a=> typeof a!=='undefined').length ||
+            // validationBuyer.filter(a=> typeof a!=='undefined').length
+        ){
+            handleModalActive(true)
+            handleModalId('pemberitahuan')
+            handleModalWithHeader(false)
+            handleModalLoading(true)
+            setProps(()=>({
+                title:'Warning',
+                children:<>Anda belum menyimpan data!</>, 
+                buttonNoColor:'primary_secondary',
+                buttonNoText:'Lanjutkan',
+                buttonYesText:'Simpan'
+            }))
+            return
+        }else submitCancel()
+    }
+    const submitSave = async()=>{
+        const response =await saveChangedData(getTmp,accessToken)
+        if(response?.Message?.Code==201){
+            Swal.fire({
+                text: 'Data Berhasil Disimpan',
+                confirmButtonText: 'OK',
+                icon: 'success',
+                confirmButtonColor: '#3085D6'
+              }).then((result) => {
+                if(result.isConfirmed){
+                  setEdit(false)
+                  setTmp([])
+                  router.push('/GM')
+                }
+              })
+        }
+        setSubmitChange(false)
+    }
+    const submitCancel = ()=>{
+        setTmp([])
+        setEdit(false)
+        handleModalLoading(false)
+        handleModalActive(false)
+        handleModalId('')
+        setCancelChange(false)
+    }
+    const handleSimpan = ()=>{
+        for (let i = 0; i < getTmp.length; i++) {
+            let status = getTmp[i]['Status']
+            let defaultSeller = getTmp[i]['DefaultSeller']
+            let defaultBuyer = getTmp[i]['DefaultBuyer']
+            let seller = getTmp[i]['Seller']
+            let buyer = getTmp[i]['Buyer']
+            let langName = getTmp[i]['LanguageName']
+            if(status&&!(defaultBuyer || defaultSeller || buyer || seller)) {
+                handleModalActive(true)
+                handleModalId('pemberitahuan')
+                handleModalWithHeader(false)
+                setProps({
+                    title:'Warning',
+                    children:<>Bahasa {langName} belum diatur</>
+                })
+                return
+            }          
+        }
+        handleModalActive(true)
+        handleModalId('pemberitahuan')
+        handleModalWithHeader(false)
+        setProps({
+            children:<>Apakah anda yakin akan menyimpan data?</>, 
+            buttonNoColor:'error_secondary',
+            buttonNoText:'Batal',
+            buttonYesText:'Simpan'
+        })
+    }
+    const RenderInEdit = useMemo(()=>{
+        return <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={handleDragEnd}
+        >
+        <table className={`${style.table}`}>
+            <thead>
+            <tr className={style.tr}>
+                {
+                    tableHeader.map(val=> <th className={`${style.th}`} key={val}>{val}</th>)
+                }
+            </tr>
+            </thead>
+            <SortableContext items={data?.Data} strategy={verticalListSortingStrategy}>
+            <tbody>
+                {getTmp?.filter(val=> val?.LanguageName.toLowerCase().includes(getSearch.toLowerCase())).filter(val=> val?.Locale.toLowerCase().includes(getSearch.toLowerCase())).map((val,i)=>{
+                    val.id=i+1
+                    return val
+                }).map((row,i) => {
+                    return(<>
+                    
+                <SortComponentItem key={row.id} id={row.id}>
+                    <>
+                        <td className={`${style.td}`}>
+                            <div className='flex w-full justify-center'><ToogleButton onClick={(e)=>handleChangeStatusTerrr(row['LanguageID'],'Status')} value={row['Status']} disabled={row['disabled']} /></div>
+                        </td>
+                        <td className={`${style.td}`}>
+                            <Bubble classname={`${style.bubleTerr} ${!edit?style.disabledBuble:''}`} >{i+1}</Bubble>
+                        </td>
+                        <td className={`${style.td}`}>{row?.Locale}</td>
+                        <td className={`${style.td}`}>{row?.LanguageName}</td>
+                        <td className={`${style.td}`}>
+                            <div className='flex w-full justify-center'>
+                                <RadioButton onChange={()=>handleChangeStatusTerrr(row['LanguageID'],'DefaultSeller',true)} checked={row['DefaultSeller']} value={row['DefaultSeller']} disabled={!row['Status']}/>
+                            </div>
+                        </td>
+                        <td className={`${style.td}`}>
+                            <div className='flex w-full justify-center'><Checkbox onChange={()=>handleChangeStatusTerrr(row['LanguageID'],'Seller')} checked={row['Seller']} disabled={!row['Status']} ><span className="flex-none"></span></Checkbox></div>
+                        </td>
+                        <td className={`${style.td}`}>
+                            <div className='flex w-full justify-center'><RadioButton onChange={()=>handleChangeStatusTerrr(row['LanguageID'],'DefaultBuyer',true)} checked={row['DefaultBuyer']} value={row['DefaultBuyer']} disabled={!row['Status']} /></div>
+                        </td>
+                        <td className={`${style.td}`}>
+                            <div className='flex w-full justify-center'><Checkbox onChange={()=>handleChangeStatusTerrr(row['LanguageID'],'Buyer')} checked={row['Buyer']} disabled={!row['Status']} ><span className="flex-none"></span></Checkbox></div>
+                        </td>
+                       
+                    </>
+                </SortComponentItem>
+                </>)})}
+            </tbody>
+            </SortableContext>
+        </table>
+    </DndContext>
+    },[getTmp,sensors,closestCenter,handleDragEnd,edit,isPending])
+    useEffect(()=>{
+        if(data?.Message?.Code==200) {
+            setRows(data?.Data)
+            setData(data?.Data)
+            setTotalPages(data?.Data?.length)
+        }
+        if(data?.Message?.Code==401){
+            router.push('/GM')
+            clearToken()
+        }
+    },[data,edit])
+    useEffect(()=>{
+        if(cancelChange) submitCancel()
+        if(submitChange) submitSave()
+    },[cancelChange,submitChange])
+    return ( 
+        <div className={`${style.main} pt-[82px] ${sidebarTerr?'ml-[298px]':'px-[18px]'} flex flex-col transition-all gap-[10px]`}>
+            <TitleContainer title={'Master Brand'} url={'/GM/master-brand'} />
+            <div className="w-full justify-between flex">
+                <div className="w-fit justify-between gap-3 flex items-center">
+                    <span>Pencarian : </span>
+                    <Input placeholder="Cari Nama Brand" changeEvent={e=>setSearch(e.target.value)} disabled={edit} />
+                </div>
+            <div className="w-fit justify-between gap-[15px] flex">
+                    {edit&&<Button type='primary' Class={style.buttonBatal} onClick={handleCancel}>Batal</Button>}
+                    {edit&&<Button  type='primary' onClick={handleSimpan}>Simpan</Button>}
+                    {!edit&&<Button onClick={()=>{
+                        setEdit(true)
+                        setTmp(rows)
+                        }} type='primary' Class={style.buttonTambah}>Tambah</Button>}
+                </div>
+            </div>
+            {edit&&<span className='text-[12px]'>Pindahkan posisi dengan cara <b>drag and drop pada kolom posisi</b> untuk mengubah urutan brand</span>}
+            {isLoading&&<>Loading...</>}
+            {
+                !!getTmp.length&&
+                <div className="border border-[#c6cbd4] p-2 rounded-[10px]">
+                    {RenderInEdit}
+                </div>
+            }
+            {
+                (rows?.length && !getTmp.length)&&
+                <div className="border border-[#c6cbd4] p-2 rounded-[10px]">
+                    <table className={`${style.table}`}>
+                        <thead>
+                        <tr className={style.tr}>
+                            {
+                                tableHeader.map(val=> <th className={`${style.th}`} key={val}>{val}</th>)
+                            }
+                        </tr>
+                        </thead>
+                        <tbody >
+                            {dataPagination?.map((row,i) => (
+                                <tr>
+                                    <td className={`${style.td} ${style.tdButton}`}>
+                                        <div className= {`flex flex-col justify-center ${style.gapBtn}`}>
+
+                                        <Button type='primary' Class={style.buttonDetail} onClick={handleSimpan}>Detail</Button>
+                                        <Button type='primary' Class={style.buttonUbah} onClick={handleSimpan}>Ubah</Button>
+                                        
+                                       </div>
+                                    </td>
+                                    <td className={`${style.td}`}>
+                                        <div className='flex w-full justify-center'>
+                                            <ToogleButton onClick={()=>handleChangeStatusTerrr(row?.LanguageID,'Status')} value={row['Status']} disabled={true} />
+                                        </div>
+                                    </td>
+                                    <td className={`${style.td}`}><Bubble classname={`${style.bubleTerr} ${style.disabledBuble}`} >{i+1}</Bubble></td>
+                                    <td className={`${style.td}`}>{row?.Locale}</td>
+                                    <td className={`${style.td}`}>{row?.LanguageName}</td>
+                                    <td className={`${style.td}`}><div className='flex w-full justify-center'><RadioButton onChange={a=>console.log(a)} checked={row['DefaultSeller']} value={row['DefaultSeller']} disabled={true} /></div></td>
+                                    <td className={`${style.td}`}><div className='flex w-full justify-center'><Checkbox disabled={true} checked={row['Seller']} ><span className="flex-none"></span></Checkbox></div></td>
+                                    <td className={`${style.td}`}><div className='flex w-full justify-center'><RadioButton disabled={true} onChange={a=>console.log(a)} checked={row['DefaultBuyer']} value={row['DefaultBuyer']} /></div></td>
+                                    <td className={`${style.td}`}><div className='flex w-full justify-center'><Checkbox disabled={true} checked={row['Buyer']} ><span className="flex-none"></span></Checkbox></div></td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            }
+            <div className="flex w-full justify-between items-center">
+                {dataPage?.length>10?<PaginationContainer activeColor='primary' currentPage={currentPage} totalPages={Math.ceil(rows?.length/offset)} onPage={a=>setPage(a)} clientSide />:''}
+            </div>
+        </div> 
+    ) 
+}
+export default BrandContainer
+export function SortComponentItem({ id, children }) {
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id })
+  
+    const style = {
+      transform: CSS.Transform.toString(transform),
+      transition,
+    }
+  
+    return (
+      <tr className={style.tr+' hover:bg-[#ebebeb] last:border-none'} ref={setNodeRef} style={style} {...attributes} {...listeners} onClick={e=>e.preventDefault()}>
+        {children}
+      </tr>
+    )
+}

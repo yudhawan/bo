@@ -1,0 +1,54 @@
+.main{
+    width: 40px;
+    height: 24px;
+    border-radius: 20px;
+    position: relative;
+}
+.dot{
+    position: absolute;
+    inset: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
+    background-color: white;
+    transition: transform 0.3s;
+}
+.text{
+    font-size: 12px;
+    font-weight: 500;
+}
+.primary{
+    background-color: #176CF7;
+}
+.secondary{
+    background-color: #ffc117;
+}
+.inactive{
+    background-color: #434343;
+}
+.disabled_active_primary{
+    button{
+        background-color: #7eafff !important;
+    }
+    span{
+        color: #7b7b7b !important;
+    }
+}
+.disabled_inactive_primary{
+    button{
+        background-color: #9d9d9d !important;
+    }
+    span{
+        color: #7b7b7b !important;
+    }
+}
+.disabled_active_primary:hover{
+    button{
+        cursor: not-allowed;
+    }    
+}
+.disabled_inactive_primary:hover{
+    button{
+        cursor: not-allowed;
+    }    
+}

@@ -1,0 +1,29 @@
+.button{
+    height: 32px;
+    font-weight: 600;
+    background-color: var(--primary-700);
+    border-radius: 20px;
+    color: white;
+    padding: 8px 24px;
+    padding-top: 6px;
+}
+.iconEye{
+    position: absolute;
+    top: 40px;
+    right: 10px;
+}
+.errorText{
+    color:var(--error-500);
+}
+.error{
+    div{
+        border-color: var(--error-500);
+    }
+}
+.eye{
+    display: flex;
+    position: absolute;
+    right: 10px;
+    top: 40px;
+    z-index: 30;
+}

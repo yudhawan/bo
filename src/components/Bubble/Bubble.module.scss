@@ -1,0 +1,41 @@
+.fill_white {
+    path {
+        fill: var(--neutral-50);
+    }
+}
+
+.fill_primary_inactive {
+    path {
+        fill: var(--neutral-800);
+    }
+}
+
+.fill_secondary_inactive {
+    path {
+        fill: var(--neutral-600);
+    }
+}
+
+.fill_secondary_info {
+    path {
+        fill: var(--primary-700);
+    }
+}
+
+.fill_secondary_error {
+    path {
+        fill: var(--error-400);
+    }
+}
+
+.fill_secondary_warning {
+    path {
+        fill: var(--warning-700);
+    }
+}
+
+.fill_secondary_success {
+    path {
+        fill: var(--success-400);
+    }
+}

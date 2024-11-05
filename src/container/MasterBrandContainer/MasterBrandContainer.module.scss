@@ -1,0 +1,113 @@
+.main{
+    background-color: white;
+}
+.buttonBatal{
+    border:1px solid  #f71717 !important;
+    background-color: white !important;
+    color:#f71717 !important ;
+}
+.buttonDetail{
+    border:1px solid  white !important;
+    background-color: #3ECD00 !important;
+    color:white !important ;
+}
+.buttonUbah{
+    border:1px solid  white !important;
+    background-color: #FFC217 !important;
+    color:white !important ;
+}
+.buttonTambah{
+    border:1px solid  white !important;
+    background-color: var(--primary-700) !important;
+    color:white !important ;
+}
+.bubleTerr{
+    width: 100% !important;
+    max-width: unset !important;
+}
+.disabledBuble{
+    border-color: #d7d7d7 !important;
+    color: #868686 !important;
+}
+.table{
+    padding: 8px;
+    border-collapse: collapse;
+    width: 100%;
+    border-radius: 10px;
+    // border: 1px solid #c6cbd4;
+}
+.tr{
+    margin:8px;
+}
+.th{
+    padding: 5px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #868686;
+    text-transform: capitalize;
+    border: 1px solid #c6cbd4;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+}
+.td{
+    padding: 5px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #868686;
+    text-transform: capitalize;
+    border: 1px solid #c6cbd4;
+    border-left: none;
+    border-right: none;
+    text-align: left;
+    border-bottom: none;
+}
+.th:nth-child(-n+4){
+    text-align: left;
+}
+.th:first-child{
+    gap: 0.2em;
+
+}
+.td:first-child{
+
+}
+.th:nth-child(2){
+    text-align: center;
+}
+.pagination:has(.PaginationContainer_active){
+    background-color: var(--primary-700);
+}
+.gapBtn{
+    gap: 0.2em;
+}
+.tdButton{
+    width: 120px;
+}
+
+// form
+.container {
+    padding-left: 32px;
+    margin-top: 10px;
+}
+
+.form_label{
+    font-size: 14;
+    font-weight: 600;
+    color: var(--neutral-600);
+    width: 280px;
+}
+
+.required::after{
+    content: '*';
+    color: var(--neutral-600);
+    font-weight: 600;
+}
+
+.image_locale {
+    border-radius: 10px;
+    border: 1px solid var(--neutral-600);
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+}

@@ -1,0 +1,88 @@
+.main{
+    background-color: white;
+    padding-bottom: 36px;
+    color: var(--neutral-900);
+}
+.buttonBatal{
+    border:1px solid  #f71717 !important;
+    background-color: white !important;
+    color:#f71717 !important ;
+}
+.buttonUbah{
+    border:1px solid  var(--primary-700) !important;
+    background-color: white !important;
+    color:var(--primary-700) !important ;
+}
+.bubleTerr{
+    width: 100% !important;
+    max-width: unset !important;
+}
+.disabledBuble{
+    border-color: #d7d7d7 !important;
+    color: #868686 !important;
+}
+.table{
+    padding: 8px;
+    border-collapse: collapse;
+    width: 100%;
+    border-radius: 10px;
+    // border: 1px solid #c6cbd4;
+}
+.tr{
+    margin:8px;
+}
+.th{
+    padding: 5px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #868686;
+    text-transform: capitalize;
+    border: 1px solid #c6cbd4;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+}
+.td{
+    padding: 5px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #868686;
+    text-transform: capitalize;
+    border: 1px solid #c6cbd4;
+    border-left: none;
+    border-right: none;
+    text-align: left;
+    border-bottom: none;
+}
+.th:nth-child(-n+4){
+    text-align: left;
+}
+.th:first-child{
+    text-align: center;
+}
+.pagination:has(.PaginationContainer_active){
+    background-color: var(--primary-700);
+}
+.search{
+    width: 262px;
+    div{
+        input{
+            flex-grow: unset;
+            width: calc(100% - 16px - 2px);
+        }
+    }
+}
+.tooltip{
+    width: 243px;
+    left: 87px;
+    div:last-child{
+        left: 40px;
+    }
+}
+.dropdown{
+    width: fit-content !important;
+    padding: 8px;
+    button{
+        gap: 8px !important;
+    }
+}

@@ -1,0 +1,58 @@
+.main{
+    display: flex;
+    align-items: center;
+    height: 40px;
+    width: fit-content;
+    gap: 4px;
+    background-color: white;
+    position: relative;
+    padding: 4px;
+    border-radius: 24px;
+}
+.toogle{
+    position: absolute;
+    width: 112px;
+    height: calc(100% - 8px); //padd top + padd bot =8px
+    top: 4px;
+    left: 4px;
+    border-radius: 24px;
+    transition: transform 0.3s;
+    display: grid;
+    place-content: center;
+    text-transform: capitalize;
+}
+.defaultButton{
+    width: 112px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    gap: 4px;
+    border-radius: 24px;
+    height: 32px;
+    color: white;
+    text-transform: capitalize;
+    font-weight: 600;
+}
+.primary{
+    border: 1px solid #176CF7;
+    
+}
+.button-active-primary{
+    background-color: #176CF7;
+    color: white !important;
+}
+.defaultColor-primary{
+    color: #176CF7;
+}
+.secondary{
+    border: 1px solid #ffc117;
+    
+}
+.button-active-secondary{
+    background-color: #ffc117;
+    color: white !important;
+}
+.defaultColor-secondary{
+    color: #ffc117;
+}

@@ -1,0 +1,79 @@
+.container_radio{
+    position: relative;
+    font-size: 12px;
+    color: var(--neutral-900);
+    font-weight: demi;
+
+    input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    input:disabled{
+        cursor: no-drop;
+    }
+
+    input:checked:disabled{
+        cursor: no-drop;
+    }
+
+    .radio_primary{
+        top: 0;
+        left: 0;
+        height: 16px;
+        width: 16px;
+        border-radius: 50%;
+        border: 1px solid var(--neutral-600);
+        transition: all 0.3s ease-in-out;
+    }
+
+    .radio_primary:after {
+        top: 5px;
+        left: 4px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--primary-700);
+    }
+}
+
+.container_radio:hover input ~ .radio_primary {
+    border: 1px solid var(--primary-700);
+}
+
+.container_radio input:checked ~ .radio_primary {
+    border: 1px solid var(--primary-700);
+}
+
+// When disabled not checked
+.container_radio input:disabled ~ .radio_primary {
+    border: 1px solid var(--neutral-600);
+}
+
+// When disabled & Checked but the span after
+.container_radio input:checked:disabled ~ .radio_primary::after {
+    top: 5px;
+    left: 4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--neutral-600) !important;
+}
+
+// When disabled & Checked the span
+.container_radio input:checked:disabled ~ .radio_primary {
+    border: 1px solid var(--neutral-600);
+    background-color: var(--neutral-400);
+    cursor: no-drop;
+}
+
+.container_radio input:checked ~ .radio_primary:after {
+    display: block;
+}
+
+.radio_primary:after {
+    content: "";
+    position: absolute;
+    display: none;
+}

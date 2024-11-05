@@ -1,0 +1,44 @@
+{
+ "languages" : [
+    {"code" : "en", "name" : "English"},
+    {"code" : "fr", "name" : "French"},
+    {"code" : "de", "name" : "German"}
+  
+  ],
+  
+  "brands" : [
+    {
+        "id":1,
+        "name": "Brand A",
+        "image": "https://via.placeholder.com/50",
+        "status": "Active",
+        "translation": {
+            "en":"Brand A",
+            "fr":"Marque A",
+            "de":"Marke A"
+        }
+    },
+    {
+        "id":2,
+        "name": "Brand B",
+        "image": "https://via.placeholder.com/50",
+        "status": "Active",
+        "translation": {
+            "en":"Brand B",
+            "fr":"Marque B",
+            "de":"Marke B"
+        }
+    },
+    {
+        "id":3,
+        "name": "Brand C",
+        "image": "https://via.placeholder.com/50",
+        "status": "Active",
+        "translation": {
+            "en":"Brand C",
+            "fr":"Marque C",
+            "de":"Marke C"
+        }
+    }
+  ]
+}
